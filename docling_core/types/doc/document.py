@@ -74,7 +74,7 @@ _logger = logging.getLogger(__name__)
 Uint64 = typing.Annotated[int, Field(ge=0, le=(2**64 - 1))]
 LevelNumber = typing.Annotated[int, Field(ge=1, le=100)]
 CharSpan = Annotated[tuple[int, int], Field(description="Character span (0-indexed)")]
-CURRENT_VERSION: Final = "1.10.0"
+CURRENT_VERSION: Final = "1.11.0"
 
 DEFAULT_EXPORT_LABELS = {
     DocItemLabel.TITLE,
@@ -1599,6 +1599,19 @@ class TabularChartMetaField(BasePrediction):
     chart_data: TableData
 
 
+class DocumentMeta(_ExtraAllowingModel):
+    """Document-level metadata for DoclingDocument."""
+
+    summary: Optional[SummaryMetaField] = None
+    language: Optional[LanguageMetaField] = None
+    topics: Optional[TopicMetaField] = None
+    keywords: Optional[KeywordsMetaField] = None
+    statements: Optional[StatementsMetaField] = None
+    title: Optional[str] = None
+    authors: Optional[list[str]] = None
+    publication_date: Optional[str] = None  # ISO 8601
+
+
 class FloatingMeta(BaseMeta):
     """Metadata model for floating."""
 
@@ -2813,6 +2826,7 @@ class DoclingDocument(BaseModel):
         # This is optional, e.g. a DoclingDocument could also be entirely
         # generated from synthetic data.
     )
+    meta: Optional[DocumentMeta] = None  # Document-level metadata
 
     furniture: Annotated[GroupItem, Field(deprecated=True)] = GroupItem(
         name="_root_",
